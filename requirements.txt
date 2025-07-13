@@ -11,6 +11,7 @@ peft
 pillow
 pyarrow>=15.0.0
 pylatexenc
+python-wordle
 qwen-vl-utils
 ray[default]
 tensordict
