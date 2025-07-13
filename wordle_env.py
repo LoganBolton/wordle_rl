@@ -1,4 +1,4 @@
-from wordle import Wordle
+from wordle.wordle import Wordle
 
 
 class WordleEnv:
