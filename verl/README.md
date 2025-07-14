@@ -20,14 +20,17 @@ PYTHONUNBUFFERED=1 python3 -m verl.trainer.main_ppo \
   data.max_response_length=256 \
   actor_rollout_ref.model.path=Qwen/Qwen2.5-0.5B-Instruct \
   actor_rollout_ref.rollout.name=sglang \
-  actor_rollout_ref.rollout.multi_turn=true \
+  actor_rollout_ref.rollout.multi_turn.enable=True \
   +actor_rollout_ref.rollout.max_steps=6 \
-  +actor_rollout_ref.rollout.tool_kwargs.tools_config_file=$PWD/verl/examples/sglang_multiturn/config/tool_config/wordle_tool.yaml \
+  +actor_rollout_ref.rollout.multi_turn.tool_config_path=$PWD/verl/examples/sglang_multiturn/config/tool_config/wordle_tool.yaml
   actor_rollout_ref.actor.optim.lr=1e-6 \
-  actor_rollout_ref.actor.ppo_mini_batch_size=4 \
+  actor_rollout_ref.actor.ppo_mini_batch_size=1 \
   actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=1 \
   actor_rollout_ref.actor.use_kl_loss=true \
   actor_rollout_ref.actor.kl_loss_coef=0.001 \
+  actor_rollout_ref.ref.log_prob_micro_batch_size=256 \
+  actor_rollout_ref.rollout.log_prob_micro_batch_size=256 \
+  critic.ppo_micro_batch_size_per_gpu=256 \
   critic.model.path=Qwen/Qwen2.5-0.5B-Instruct \
   critic.optim.lr=1e-5 \
   trainer.logger="['console','wandb']" \
@@ -37,7 +40,6 @@ PYTHONUNBUFFERED=1 python3 -m verl.trainer.main_ppo \
   trainer.nnodes=1 \
   trainer.total_epochs=3 \
   trainer.save_freq=-1
-
 
 ```
 /home/log/Github/wordle_rl/verl/examples/sglang_multiturn/config/tool_config/wordle_tool.yaml
