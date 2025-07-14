@@ -1,16 +1,17 @@
 tools:
-  - class_name: verl.tools.wordle_tool.WordleTool          # dotted import path
+  - class_name: verl.tools.wordle_tool.WordleTool
     config:
-      type: native                              # local Python tool
+      type: native        # local Python tool
       max_attempts: 6
-      reward_shaping: true
-    tool_schema:                                # OpenAI-style function signature
-      name: "wordle_guess"
-      description: "A tool to guess a 5-letter word in the Wordle environment."
-      parameters:
-        type: object
-        properties:
-          guess:
-            type: string
-            description: "Your 5-letter guess."
-        required: ["guess"]
+    tool_schema:
+      type: function      # ← add this
+      function:           # ← wrap the signature inside here
+        name: wordle_guess
+        description: Guess a 5-letter Wordle word.
+        parameters:
+          type: object
+          properties:
+            guess:
+              type: string
+              description: Your 5-letter guess
+          required: [guess]
