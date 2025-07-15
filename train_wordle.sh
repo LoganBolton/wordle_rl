@@ -11,13 +11,12 @@ python3 -m verl.trainer.main_ppo \
   data.max_prompt_length=256 \
   data.max_response_length=256 \
   data.return_raw_chat=true \
-  data.reward_fn_key=data_source \
   actor_rollout_ref.model.path=Qwen/Qwen2.5-0.5B-Instruct \
   actor_rollout_ref.rollout.name=sglang \
   actor_rollout_ref.rollout.multi_turn.enable=True \
   +actor_rollout_ref.rollout.max_steps=6 \
   +actor_rollout_ref.rollout.multi_turn.tool_config_path=verl/examples/sglang_multiturn/config/tool_config/wordle_tool_config.yaml \
-  actor_rollout_ref.rollout.multi_turn.interaction_config_path="verl/examples/sglang_multiturn/config/interaction_config/wordle.yaml" \
+  actor_rollout_ref.rollout.multi_turn.interaction_config_path="verl/examples/sglang_multiturn/config/interaction_config/wordle_interaction_config.yaml" \
   actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
   actor_rollout_ref.actor.optim.lr=1e-6 \
   actor_rollout_ref.actor.ppo_mini_batch_size=1 \
@@ -30,6 +29,8 @@ python3 -m verl.trainer.main_ppo \
   critic.ppo_micro_batch_size_per_gpu=1 \
   critic.model.path=Qwen/Qwen2.5-0.5B-Instruct \
   critic.optim.lr=1e-5 \
+  +custom_reward_function.path=$PROJECT_DIR/verl/examples/sglang_multiturn/reward_fn/zero_reward.py \
+  ++custom_reward_function.name=zero_reward \
   reward_model.enable=false \
   trainer.logger="['console','wandb']" \
   trainer.project_name=verl_wordle \

@@ -1,4 +1,4 @@
 interaction:
   - name: "wordle"
-    class_name: "verl.interactions.gsm8k_interaction.WordleInteraction"
+    class_name: "verl.interactions.wordle_interaction.WordleInteraction"
     config: {}

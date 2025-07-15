@@ -3,7 +3,7 @@ import os
 from typing import Any, Optional
 from uuid import uuid4
 
-from verl.utils.reward_score import gsm8k
+from verl.tools.utils.wordle_env import WordleEnv
 
 from .base import BaseInteraction
 
@@ -11,64 +11,80 @@ logger = logging.getLogger(__name__)
 logger.setLevel(os.getenv("VERL_LOGGING_LEVEL", "WARN"))
 
 
-class Gsm8kInteraction(BaseInteraction):
-    """A demo interaction for calculating the reward of gsm8k.
+class WordleInteraction(BaseInteraction):
+    """Multi‑turn interaction wrapper for training an agent on Wordle.
 
-    - `start_interaction`: start a interaction instance for a trajectory.
-    - `generate_response`: generate the response of the user.
-    - `calculate_score`: calculate the score of the interaction.
-    - `finalize_interaction`: finalize the interaction instance.
+    Each interaction corresponds to one Wordle episode. The agent issues a
+    five‑letter guess as the *user* message; the wrapper returns a textual
+    description of the game state as the *assistant* message, plus a shaped
+    reward. The episode terminates when the word is solved or the maximum
+    number of attempts is reached.
     """
 
     def __init__(self, config: dict):
         super().__init__(config)
-        self._instance_dict = {}
+        self._instance_dict: dict[str, dict[str, Any]] = {}
+
+    # ---------------------------------------------------------------------
+    # BaseInteraction API
+    # ---------------------------------------------------------------------
 
     async def start_interaction(
-        self, instance_id: Optional[str] = None, ground_truth: Optional[str] = None, **kwargs
+        self,
+        instance_id: Optional[str] = None,
+        target_word: Optional[str] = None,
+        **_: Any,
     ) -> str:
+        """Create a fresh Wordle environment and return its *instance_id*."""
         if instance_id is None:
             instance_id = str(uuid4())
-        self._instance_dict[instance_id] = {
-            "response": "",
-            "ground_truth": ground_truth,
-            "reward": 0.0,
-        }
+        env = WordleEnv(word=target_word)
+        self._instance_dict[instance_id] = {"env": env, "reward": 0.0}
         return instance_id
 
     async def generate_response(
-        self, instance_id: str, messages: list[dict[str, Any]], **kwargs
+        self,
+        instance_id: str,
+        messages: list[dict[str, Any]],
+        **_: Any,
     ) -> tuple[bool, str, float, dict]:
-        content = ""
-        for i in range(len(messages) - 1, -1, -1):
-            item = messages[i]
-            if item.get("role") == "user":
-                content = item.get("content")
+        """Advance the game using the latest *user* guess.
+
+        Returns:
+            should_terminate_sequence: bool
+            response: str                 # assistant reply shown to agent
+            reward: float                 # scalar RL reward
+            info: dict                    # diagnostics for logging
+        """
+        # ------------------------------------------------------------------
+        # 1. Extract the latest user guess
+        # ------------------------------------------------------------------
+        guess = ""
+        for msg in reversed(messages):
+            if msg.get("role") == "user":
+                guess = msg.get("content", "").strip().lower()
                 break
 
-        if content and content.startswith("#### "):
-            self._instance_dict[instance_id]["response"] = content
-        else:
-            self._instance_dict[instance_id]["response"] = "#### " + (content or "")
+        env: WordleEnv = self._instance_dict[instance_id]["env"]
 
-        reward = await self.calculate_score(instance_id)
-        if reward == 1.0:
-            response = "Your response is correct!"
-            should_terminate_sequence = True
-        else:
-            response = "Your response is incorrect! You need to reflect on your answer and try again."
-            should_terminate_sequence = False
+        # ------------------------------------------------------------------
+        # 2. Step the environment and compute reward
+        # ------------------------------------------------------------------
+        observation, reward, done, info = env.step(guess)
+        self._instance_dict[instance_id]["reward"] = reward
 
-        return should_terminate_sequence, response, reward, {}
+        # ------------------------------------------------------------------
+        # 3. Build assistant message (state prompt)
+        # ------------------------------------------------------------------
+        response = env.get_state_prompt(guess)
+        should_terminate_sequence = done
 
-    async def calculate_score(self, instance_id: str, **kwargs) -> float:
-        return gsm8k.compute_score(
-            self._instance_dict[instance_id]["response"],
-            self._instance_dict[instance_id]["ground_truth"],
-            method="flexible",
-            format_score=0.0,
-            score=1.0,
-        )
+        return should_terminate_sequence, response, reward, info
 
-    async def finalize_interaction(self, instance_id: str, **kwargs) -> None:
-        del self._instance_dict[instance_id]
+    async def calculate_score(self, instance_id: str, **_: Any) -> float:
+        """Return the most recently computed reward."""
+        return float(self._instance_dict[instance_id]["reward"])
+
+    async def finalize_interaction(self, instance_id: str, **_: Any) -> None:
+        """Clean up the interaction state."""
+        self._instance_dict.pop(instance_id, None)

@@ -10,7 +10,9 @@
 - verl/verl/interactions/wordle_interaction.py
   - Handles the multi turn prompt interaction based on correct/incorrect guesses
   - Need to flesh out more
-  
+- verl/examples/sglang_multiturn/config/interaction_config/wordle_interaction_config.yaml
+  - Points to word_interaction.py file and that's it 
+
 ## notes
 I am just using n_nodes == 1 right now for simplicity. that affects infer_tp because the code wants to tensor parallel over just one gpu
 
@@ -177,7 +179,9 @@ python3 -m verl.trainer.main_ppo \
     data.train_files=$HOME/data/gsm8k_verl_sgl_multi_turn_w_interaction/train.parquet \
     data.val_files=$HOME/data/gsm8k_verl_sgl_multi_turn_w_interaction/test.parquet \
     actor_rollout_ref.rollout.multi_turn.interaction_config_path="$PROJECT_DIR/examples/sglang_multiturn/config/interaction_config/gsm8k_interaction_config.yaml" \
-    trainer.total_epochs=15 $@
+    trainer.total_epochs=15 
+    
+    $@
 
 
 ```

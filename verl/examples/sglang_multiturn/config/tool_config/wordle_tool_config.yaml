@@ -1,4 +1,4 @@
-ools:
+tools:
   - class_name: verl.tools.wordle_tool.WordleTool
     config:
       type: native        # local Python tool
