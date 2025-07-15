@@ -1,5 +1,13 @@
 # Wordle project
 
+## Current WIP notes
+- Actually runs for 3 steps (yay!)
+- Probably crashes because of dataset problems
+  - Probably worth initing the dataset with preset games 
+- Reward function probably isn't being passed in?
+  - Currently just giving zero reward every time in custom reward function
+  - o3 says I need to make a new reward function that returns ```loat(extra_info.get("wordle_score", 0.0))```
+
 ## Important files (WIP)  
 - verl/verl/tools/wordle_tool.py
   - Contains the file that runs the tool
