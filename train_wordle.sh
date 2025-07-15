@@ -1,4 +1,9 @@
-PYTHONUNBUFFERED=1 python3 -m verl.trainer.main_ppo \
+PROJECT_DIR="$(pwd)"
+CONFIG_PATH="$PROJECT_DIR/verl/examples/sglang_multiturn/config"
+
+python3 -m verl.trainer.main_ppo \
+  --config-path="$CONFIG_PATH" \
+  --config-name='wordle_w_interaction' \
   data.train_files=$PWD/data/wordle_dataset.parquet \
   data.val_files=$PWD/data/wordle_dataset.parquet \
   data.return_multi_modal_inputs=false \
@@ -11,7 +16,8 @@ PYTHONUNBUFFERED=1 python3 -m verl.trainer.main_ppo \
   actor_rollout_ref.rollout.name=sglang \
   actor_rollout_ref.rollout.multi_turn.enable=True \
   +actor_rollout_ref.rollout.max_steps=6 \
-  +actor_rollout_ref.rollout.multi_turn.tool_config_path=$PWD/verl/examples/sglang_multiturn/config/tool_config/wordle_tool.yaml \
+  +actor_rollout_ref.rollout.multi_turn.tool_config_path=verl/examples/sglang_multiturn/config/tool_config/wordle_tool_config.yaml \
+  actor_rollout_ref.rollout.multi_turn.interaction_config_path="verl/examples/sglang_multiturn/config/interaction_config/wordle.yaml" \
   actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
   actor_rollout_ref.actor.optim.lr=1e-6 \
   actor_rollout_ref.actor.ppo_mini_batch_size=1 \
