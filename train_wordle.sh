@@ -4,8 +4,8 @@ CONFIG_PATH="$PROJECT_DIR/verl/examples/sglang_multiturn/config"
 python3 -m verl.trainer.main_ppo \
   --config-path="$CONFIG_PATH" \
   --config-name='wordle_w_interaction' \
-  data.train_files=$PWD/data/wordle_dataset.parquet \
-  data.val_files=$PWD/data/wordle_dataset.parquet \
+  data.train_files=/tmp/wordle_data/wordle_dataset_fixed.parquet \
+  data.val_files=/tmp/wordle_data/wordle_dataset_fixed.parquet \
   data.return_multi_modal_inputs=false \
   data.train_batch_size=8 \
   data.max_prompt_length=256 \
@@ -32,6 +32,7 @@ python3 -m verl.trainer.main_ppo \
   +custom_reward_function.path=$PROJECT_DIR/verl/examples/sglang_multiturn/reward_fn/wordle_reward.py \
   ++custom_reward_function.name=wordle_reward \
   reward_model.enable=false \
+  reward_model.reward_manager=wordle \
   trainer.logger="['console','wandb']" \
   trainer.project_name=verl_wordle \
   trainer.experiment_name=wordle-qwen2.5-0.5b \

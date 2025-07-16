@@ -8,6 +8,9 @@ import os
 def create_wordle_dataset():
     """Create a minimal Wordle dataset with the required VERL structure"""
     
+    # Common 5-letter words for Wordle
+    target_words = ["WORLD", "HOUSE", "APPLE", "TIGER", "CLOUD", "BEACH", "PLANT", "MUSIC", "LIGHT", "HEART"]
+    
     # Create some sample Wordle prompts
     data = []
     
@@ -27,12 +30,16 @@ def create_wordle_dataset():
             "ability": "game",
             "reward_model": {
                 "style": "rule",
-                "ground_truth": "WORLD"  # Example target word - this should be replaced with actual game logic
+                "ground_truth": target_words[i]
             },
             "extra_info": {
                 "index": i,
                 "split": "train",
-                "game_id": f"wordle_{i:04d}"
+                "game_id": f"wordle_{i:04d}",
+                "interaction_kwargs": {
+                    "name": "wordle",
+                    "target_word": target_words[i]
+                }
             }
         }
         data.append(entry)
@@ -41,10 +48,10 @@ def create_wordle_dataset():
     df = pd.DataFrame(data)
     
     # Ensure data directory exists
-    os.makedirs("data", exist_ok=True)
+    os.makedirs("/tmp/wordle_data", exist_ok=True)
     
     # Save as parquet
-    df.to_parquet("data/wordle_dataset.parquet", index=False)
+    df.to_parquet("/tmp/wordle_data/wordle_dataset_fixed.parquet", index=False)
     print(f"Created wordle dataset with {len(data)} entries")
     print("Dataset structure:")
     print(df.columns.tolist())
