@@ -29,14 +29,14 @@ python3 -m verl.trainer.main_ppo \
   critic.ppo_micro_batch_size_per_gpu=1 \
   critic.model.path=Qwen/Qwen2.5-0.5B-Instruct \
   critic.optim.lr=1e-5 \
-  +custom_reward_function.path=$PROJECT_DIR/verl/examples/sglang_multiturn/reward_fn/zero_reward.py \
-  ++custom_reward_function.name=zero_reward \
+  +custom_reward_function.path=$PROJECT_DIR/verl/examples/sglang_multiturn/reward_fn/wordle_reward.py \
+  ++custom_reward_function.name=wordle_reward \
   reward_model.enable=false \
   trainer.logger="['console','wandb']" \
   trainer.project_name=verl_wordle \
   trainer.experiment_name=wordle-qwen2.5-0.5b \
   trainer.n_gpus_per_node=1 \
   trainer.nnodes=1 \
-  trainer.total_epochs=3 \
+  trainer.total_epochs=10 \
   trainer.val_before_train=false \
   trainer.save_freq=-1

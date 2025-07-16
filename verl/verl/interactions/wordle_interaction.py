@@ -39,7 +39,7 @@ class WordleInteraction(BaseInteraction):
         if instance_id is None:
             instance_id = str(uuid4())
         env = WordleEnv(word=target_word)
-        self._instance_dict[instance_id] = {"env": env, "reward": 0.0}
+        self._instance_dict[instance_id] = {"env": env, "reward": 0.0, "total_reward": 0.0}
         return instance_id
 
     async def generate_response(
@@ -72,6 +72,8 @@ class WordleInteraction(BaseInteraction):
         # ------------------------------------------------------------------
         observation, reward, done, info = env.step(guess)
         self._instance_dict[instance_id]["reward"] = reward
+        # Accumulate total reward across all turns
+        self._instance_dict[instance_id]["total_reward"] += reward
 
         # ------------------------------------------------------------------
         # 3. Build assistant message (state prompt)
@@ -82,8 +84,8 @@ class WordleInteraction(BaseInteraction):
         return should_terminate_sequence, response, reward, info
 
     async def calculate_score(self, instance_id: str, **_: Any) -> float:
-        """Return the most recently computed reward."""
-        return float(self._instance_dict[instance_id]["reward"])
+        """Return the accumulated total reward across all turns."""
+        return float(self._instance_dict[instance_id]["total_reward"])
 
     async def finalize_interaction(self, instance_id: str, **_: Any) -> None:
         """Clean up the interaction state."""
