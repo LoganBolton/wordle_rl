@@ -87,7 +87,7 @@ class WordleEnv:
             return "Game not started yet."
             
         result = self.last_result
-        prompt = f"**Current state of the game after guess '{guess}'**\n"
+        prompt = f""
 
         if not result:  # Invalid guess
             prompt += f"Guess '{guess}' is NOT a valid word or is NOT the correct length. Try a different word.\n"

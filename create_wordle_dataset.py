@@ -20,11 +20,11 @@ def create_wordle_dataset():
             "prompt": [
                 {
                     "role": "system", 
-                    "content": "You are playing Wordle. Guess a 5-letter word. You'll receive feedback for each guess."
+                    "content": "You are an agent playing Wordle. Your job is to guess a real 5-letter word. Your output should ONLY be a 5-letter word and NOTHING ELSE. You should respond with dashes separrating each letter. For example, if your guess is 'HELLO', you should respond with 'H-E-L-L-O'."
                 },
                 {
                     "role": "user", 
-                    "content": "Let's start a new Wordle game! Make your first guess."
+                    "content": "Respond your one word guess to start the game."
                 }
             ],
             "ability": "game",

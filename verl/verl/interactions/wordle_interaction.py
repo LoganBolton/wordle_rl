@@ -57,13 +57,38 @@ class WordleInteraction(BaseInteraction):
             info: dict                    # diagnostics for logging
         """
         # ------------------------------------------------------------------
-        # 1. Extract the latest user guess
+        # 1. Extract the latest user guess and validate format
         # ------------------------------------------------------------------
         guess = ""
+        feedback_message = ""
+        
         for msg in reversed(messages):
-            if msg.get("role") == "user":
-                guess = msg.get("content", "").strip().lower()
-                break
+            if msg.get("role") == "assistant":
+                raw_guess = msg.get("content", "").strip().lower()
+                # Remove dashes to handle tokenization-friendly format (e.g., "s-t-a-r-s" -> "stars")
+                clean_guess = raw_guess.replace("-", "").replace(" ", "")
+                
+                # Check if it's alphabetic first
+                if not clean_guess.isalpha():
+                    feedback_message = f"Your guess '{raw_guess}' contains non-letter characters. Please use only letters or dashes."
+                    break
+                elif len(clean_guess) < 5:
+                    feedback_message = f"Your guess '{raw_guess}' has only {len(clean_guess)} letters. Wordle words must be exactly 5 letters."
+                    break
+                elif len(clean_guess) > 5:
+                    feedback_message = f"Your guess '{raw_guess}' has {len(clean_guess)} letters. Wordle words must be exactly 5 letters."
+                    break
+                else:
+                    # Valid 5-letter word
+                    guess = clean_guess
+                    break
+            feedback_message += f"Guess a different word besides {guess}."
+        
+        # If no valid guess found, provide specific feedback
+        if not guess:
+            if not feedback_message:
+                feedback_message = "Please provide a 5-letter word guess using the format: L-E-T-T-E-R"
+            return False, feedback_message, -1.0, {"error": "invalid_format"}
 
         env: WordleEnv = self._instance_dict[instance_id]["env"]
 
