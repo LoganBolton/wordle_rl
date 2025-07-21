@@ -12,6 +12,7 @@ class WordleEnv:
         self.attempts = 0
         self.gameOver = False
         self.last_result = None
+        self.guessed_words = set()
         return self.get_observation()
 
     def step(self, guess):
@@ -19,12 +20,18 @@ class WordleEnv:
         if self.gameOver:
             return self.get_observation(), 0, True, {"error": "Game is already over"}
         
+        # Check if word was already guessed
+        is_repeat_guess = guess.lower() in self.guessed_words
+        
         # Make the guess and store result
         self.last_result = self.game.guess(guess)
         self.attempts += 1
         
+        # Add guess to set of guessed words
+        self.guessed_words.add(guess.lower())
+        
         # Calculate reward
-        reward = self.get_reward()
+        reward = self.get_reward(is_repeat_guess)
         
         # Check if game is over
         done = self.game.solved or self.game.failed or self.attempts >= self.max_attempts
@@ -40,15 +47,20 @@ class WordleEnv:
             "attempts": self.attempts,
             "target_word": self.game.word,
             "last_guess": guess,
-            "last_result": self.last_result
+            "last_result": self.last_result,
+            "is_repeat_guess": is_repeat_guess
         }
         
         return observation, reward, done, info
 
-    def get_reward(self):
+    def get_reward(self, is_repeat_guess=False):
         """Calculate reward based on the last guess result"""
         if not self.last_result:  # Invalid guess
             return -2
+            
+        # Penalty for repeat guesses
+        if is_repeat_guess:
+            return -3
             
         # Check if game is solved
         if self.game.solved:
@@ -78,7 +90,8 @@ class WordleEnv:
             "solved": self.game.solved if hasattr(self.game, 'solved') else False,
             "last_result": self.last_result,
             "alphabet_state": getattr(self.game, 'alphabet', {}),
-            "attempt_history": getattr(self.game, 'attempts', [])
+            "attempt_history": getattr(self.game, 'attempts', []),
+            "guessed_words": list(self.guessed_words)
         }
 
     def get_state_prompt(self, guess=None):
@@ -108,6 +121,7 @@ class WordleEnv:
         elif self.game.failed:
             prompt += f"\n💔 Game over! The word was '{self.game.word}'\n"
         else:
-            prompt += f"\nAttempts remaining: {self.max_attempts - self.attempts}. Guess a different word besides \"{guess}\"\n"
+            guessed_list = ", ".join(sorted(self.guessed_words))
+            prompt += f"\nAttempts remaining: {self.max_attempts - self.attempts}. Previously guessed words: {guessed_list}. Guess a different word.\n"
         
         return prompt

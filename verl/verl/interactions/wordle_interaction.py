@@ -39,7 +39,7 @@ class WordleInteraction(BaseInteraction):
         if instance_id is None:
             instance_id = str(uuid4())
         env = WordleEnv(word=target_word)
-        self._instance_dict[instance_id] = {"env": env, "reward": 0.0, "total_reward": 0.0}
+        self._instance_dict[instance_id] = {"env": env, "reward": 0.0, "total_reward": 0.0, "all_guesses": set()}
         return instance_id
 
     async def generate_response(
@@ -61,12 +61,23 @@ class WordleInteraction(BaseInteraction):
         # ------------------------------------------------------------------
         guess = ""
         feedback_message = ""
+        raw_guess = ""
         
         for msg in reversed(messages):
             if msg.get("role") == "assistant":
                 raw_guess = msg.get("content", "").strip().lower()
                 # Remove dashes to handle tokenization-friendly format (e.g., "s-t-a-r-s" -> "stars")
                 clean_guess = raw_guess.replace("-", "").replace(" ", "")
+                
+                # Check for repeat guess first (before validation)
+                if raw_guess in self._instance_dict[instance_id]["all_guesses"]:
+                    feedback_message = f"You already guessed '{raw_guess}'. Try a different word."
+                    # Update total reward for repeat guess penalty
+                    self._instance_dict[instance_id]["total_reward"] += -3.0
+                    return False, feedback_message, -3.0, {"error": "repeat_guess"}
+                
+                # Add to all guesses set
+                self._instance_dict[instance_id]["all_guesses"].add(raw_guess)
                 
                 # Check if it's alphabetic first
                 if not clean_guess.isalpha():
@@ -82,12 +93,14 @@ class WordleInteraction(BaseInteraction):
                     # Valid 5-letter word
                     guess = clean_guess
                     break
-            feedback_message += f"Guess a different word besides {guess}."
+            pass
         
         # If no valid guess found, provide specific feedback
         if not guess:
             if not feedback_message:
                 feedback_message = "Please provide a 5-letter word guess using the format: L-E-T-T-E-R"
+            # Update total reward for invalid format penalty
+            self._instance_dict[instance_id]["total_reward"] += -1.0
             return False, feedback_message, -1.0, {"error": "invalid_format"}
 
         env: WordleEnv = self._instance_dict[instance_id]["env"]
