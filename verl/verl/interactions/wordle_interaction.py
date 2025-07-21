@@ -74,7 +74,17 @@ class WordleInteraction(BaseInteraction):
                     feedback_message = f"You already guessed '{raw_guess}'. Try a different word."
                     # Update total reward for repeat guess penalty
                     self._instance_dict[instance_id]["total_reward"] += -3.0
-                    return False, feedback_message, -3.0, {"error": "repeat_guess"}
+                    # Create info dict for repeat guess
+                    env = self._instance_dict[instance_id]["env"]
+                    info = {
+                        "error": "repeat_guess",
+                        "raw_guess": raw_guess,
+                        "attempts": getattr(env, 'attempts', 0),
+                        "target_word": getattr(env.game, 'word', None),
+                        "total_reward": self._instance_dict[instance_id]["total_reward"],
+                        "all_guesses": list(self._instance_dict[instance_id]["all_guesses"])
+                    }
+                    return False, feedback_message, -3.0, info
                 
                 # Add to all guesses set
                 self._instance_dict[instance_id]["all_guesses"].add(raw_guess)
@@ -101,7 +111,17 @@ class WordleInteraction(BaseInteraction):
                 feedback_message = "Please provide a 5-letter word guess using the format: L-E-T-T-E-R"
             # Update total reward for invalid format penalty
             self._instance_dict[instance_id]["total_reward"] += -1.0
-            return False, feedback_message, -1.0, {"error": "invalid_format"}
+            # Create info dict for invalid format
+            env = self._instance_dict[instance_id]["env"]
+            info = {
+                "error": "invalid_format",
+                "raw_guess": raw_guess,
+                "attempts": getattr(env, 'attempts', 0),
+                "target_word": getattr(env.game, 'word', None),
+                "total_reward": self._instance_dict[instance_id]["total_reward"],
+                "all_guesses": list(self._instance_dict[instance_id]["all_guesses"])
+            }
+            return False, feedback_message, -1.0, info
 
         env: WordleEnv = self._instance_dict[instance_id]["env"]
 

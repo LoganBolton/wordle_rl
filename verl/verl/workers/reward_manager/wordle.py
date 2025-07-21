@@ -62,12 +62,41 @@ class WordleRewardManager:
                 user_turn_rewards = reward_dict.get("user_turn_rewards", [])
                 if len(user_turn_rewards) > 0:
                     sample_rewards = float(sum(user_turn_rewards))
+                
+                # Extract metrics from user turns for extra info
+                user_turn_metrics = reward_dict.get("user_turn_metrics", [])
+                for turn_idx, metrics in enumerate(user_turn_metrics):
+                    if isinstance(metrics, dict):
+                        for key, value in metrics.items():
+                            # Convert complex objects to strings for numpy compatibility
+                            if isinstance(value, list):
+                                value = str(value)  # Convert lists to strings
+                            elif isinstance(value, dict):
+                                value = str(value)  # Convert dicts to strings
+                            elif value is None:
+                                value = ""  # Convert None to empty string
+                            
+                            if key not in reward_extra_info:
+                                reward_extra_info[key] = [""] * i  # Pad previous samples with empty strings
+                            # Ensure we have enough space for current sample
+                            while len(reward_extra_info[key]) < i:
+                                reward_extra_info[key].append("")
+                            if len(reward_extra_info[key]) == i:
+                                reward_extra_info[key].append(str(value))
+                            else:
+                                reward_extra_info[key][i] = str(value)
+            
             # Place the scalar reward on the last valid response token.
             last_token_idx = int(response_mask[i].sum().item()) - 1
             if last_token_idx >= 0:
                 reward_tensor[i, last_token_idx] = sample_rewards
             # Store extra diagnostics if requested.
             reward_extra_info["env_return"].append(sample_rewards)
+            
+            # Ensure all reward_extra_info lists have the same length
+            for key in reward_extra_info:
+                while len(reward_extra_info[key]) <= i:
+                    reward_extra_info[key].append("")
 
         if return_dict:
             return {"reward_tensor": reward_tensor, "reward_extra_info": reward_extra_info}

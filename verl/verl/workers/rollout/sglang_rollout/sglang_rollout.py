@@ -801,6 +801,7 @@ class SGLangRollout(BaseRollout):
         current_turns = 0
         user_turns = 0
         user_turn_rewards = []
+        user_turn_metrics = []
 
         # Create request-level sampling parameters
         request_sampling_params = self.sampling_params.copy()
@@ -962,6 +963,7 @@ class SGLangRollout(BaseRollout):
                     _req.request_id, messages, **_req.interaction_kwargs
                 )
                 user_turn_rewards.append(reward)
+                user_turn_metrics.append(metrics)
                 if should_terminate_sequence:
                     finish_reason_type = FinishReasonTypeEnum.STOP
                     _req.state = AsyncRolloutRequestStateEnum.COMPLETED
@@ -989,7 +991,7 @@ class SGLangRollout(BaseRollout):
             tool_reward_tasks.append(calc_reward_and_release_fn(name, tool))
         tool_reward_scores = await asyncio.gather(*tool_reward_tasks)
         tool_reward_scores = dict(tool_reward_scores)
-        all_rewards = {**tool_reward_scores, **{"user_turn_rewards": user_turn_rewards}}
+        all_rewards = {**tool_reward_scores, **{"user_turn_rewards": user_turn_rewards}, **{"user_turn_metrics": user_turn_metrics}}
         _req.finalize(self.processing_class, all_rewards, finish_reason_type)
 
         return _req

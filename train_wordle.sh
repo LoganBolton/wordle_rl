@@ -42,7 +42,7 @@ python3 -m verl.trainer.main_ppo \
   trainer.log_val_generations=1 \
   trainer.n_gpus_per_node=2 \
   trainer.nnodes=1 \
-  trainer.total_epochs=200 \
+  trainer.total_epochs=10 \
   trainer.val_before_train=false \
-  trainer.test_freq=5 \
+  trainer.test_freq=2 \
   trainer.save_freq=-1
