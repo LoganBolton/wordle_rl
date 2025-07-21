@@ -8,8 +8,8 @@ python3 -m verl.trainer.main_ppo \
   data.val_files=/tmp/wordle_data/wordle_dataset_fixed.parquet \
   data.return_multi_modal_inputs=false \
   data.train_batch_size=8 \
-  data.max_prompt_length=256 \
-  data.max_response_length=256 \
+  data.max_prompt_length=1024 \
+  data.max_response_length=1024 \
   data.return_raw_chat=true \
   actor_rollout_ref.model.path=Qwen/Qwen2.5-0.5B-Instruct \
   actor_rollout_ref.rollout.name=sglang \

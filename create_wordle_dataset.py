@@ -9,12 +9,12 @@ def create_wordle_dataset():
     """Create a minimal Wordle dataset with the required VERL structure"""
     
     # Common 5-letter words for Wordle
-    target_words = ["WORLD", "HOUSE", "APPLE", "TIGER", "CLOUD", "BEACH", "PLANT", "MUSIC", "LIGHT", "HEART"]
+    target_words = ["HOUSE", "APPLE"]
     
     # Create some sample Wordle prompts
     data = []
     
-    for i in range(10):  # Create 10 sample entries
+    for i in range(len(target_words)):  # Create 10 sample entries
         entry = {
             "data_source": "wordle",  # This is the key the reward manager looks for
             "prompt": [
@@ -24,7 +24,7 @@ def create_wordle_dataset():
                 },
                 {
                     "role": "user", 
-                    "content": "Respond your one word guess to start the game."
+                    "content": "Respond with your new one word guess."
                 }
             ],
             "ability": "game",
