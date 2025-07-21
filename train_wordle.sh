@@ -1,11 +1,13 @@
 PROJECT_DIR="$(pwd)"
 CONFIG_PATH="$PROJECT_DIR/verl/examples/sglang_multiturn/config"
 
+export CUDA_VISIBLE_DEVICES=1,0
+
 python3 -m verl.trainer.main_ppo \
   --config-path="$CONFIG_PATH" \
   --config-name='wordle_w_interaction' \
-  data.train_files=/tmp/wordle_data/wordle_dataset_fixed.parquet \
-  data.val_files=/tmp/wordle_data/wordle_dataset_fixed.parquet \
+  data.train_files=/tmp/wordle_data/wordle_dataset.parquet \
+  data.val_files=/tmp/wordle_data/wordle_dataset.parquet \
   data.return_multi_modal_inputs=false \
   data.train_batch_size=8 \
   data.max_prompt_length=1024 \
@@ -14,7 +16,7 @@ python3 -m verl.trainer.main_ppo \
   actor_rollout_ref.model.path=Qwen/Qwen2.5-0.5B-Instruct \
   actor_rollout_ref.rollout.name=sglang \
   actor_rollout_ref.rollout.multi_turn.enable=True \
-  +actor_rollout_ref.rollout.max_steps=6 \
+  +actor_rollout_ref.rollout.max_steps=10 \
   +actor_rollout_ref.rollout.multi_turn.tool_config_path=verl/examples/sglang_multiturn/config/tool_config/wordle_tool_config.yaml \
   actor_rollout_ref.rollout.multi_turn.interaction_config_path="verl/examples/sglang_multiturn/config/interaction_config/wordle_interaction_config.yaml" \
   actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
@@ -37,10 +39,10 @@ python3 -m verl.trainer.main_ppo \
   trainer.logger="['console','wandb']" \
   trainer.project_name=verl_wordle \
   trainer.experiment_name=wordle-qwen2.5-0.5b \
-  trainer.log_val_generations=2 \
+  trainer.log_val_generations=1 \
   trainer.n_gpus_per_node=1 \
   trainer.nnodes=1 \
-  trainer.total_epochs=6 \
+  trainer.total_epochs=100 \
   trainer.val_before_train=false \
-  trainer.test_freq=2 \
+  trainer.test_freq=5 \
   trainer.save_freq=-1

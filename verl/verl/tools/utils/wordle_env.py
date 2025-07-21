@@ -108,6 +108,6 @@ class WordleEnv:
         elif self.game.failed:
             prompt += f"\n💔 Game over! The word was '{self.game.word}'\n"
         else:
-            prompt += f"\nAttempts remaining: {self.max_attempts - self.attempts}\n"
+            prompt += f"\nAttempts remaining: {self.max_attempts - self.attempts}. Guess a different word besides \"{guess}\"\n"
         
         return prompt

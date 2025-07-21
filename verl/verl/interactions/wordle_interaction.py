@@ -70,13 +70,13 @@ class WordleInteraction(BaseInteraction):
                 
                 # Check if it's alphabetic first
                 if not clean_guess.isalpha():
-                    feedback_message = f"Your guess '{raw_guess}' contains non-letter characters. Please use only letters or dashes."
+                    feedback_message = f"Your guess '{raw_guess}' contains non-letter characters. Please use only letters or dashes. Guess a different word."
                     break
                 elif len(clean_guess) < 5:
-                    feedback_message = f"Your guess '{raw_guess}' has only {len(clean_guess)} letters. Wordle words must be exactly 5 letters."
+                    feedback_message = f"Your guess '{raw_guess}' has only {len(clean_guess)} letters. Wordle words must be exactly 5 letters. Guess a different word."
                     break
                 elif len(clean_guess) > 5:
-                    feedback_message = f"Your guess '{raw_guess}' has {len(clean_guess)} letters. Wordle words must be exactly 5 letters."
+                    feedback_message = f"Your guess '{raw_guess}' has {len(clean_guess)} letters. Wordle words must be exactly 5 letters. Guess a different word."
                     break
                 else:
                     # Valid 5-letter word
