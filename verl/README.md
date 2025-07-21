@@ -2,11 +2,10 @@
 
 ## wip notes
 - Currently, things seem to be training so that's cool
-- System prompt is being applied at every turn
-  - should only be once at the start
-- Validation logs stopped being displayed on wandb for some reason
-- Need to change it so that GPU 1 is the main GPU, not 0
-- Currently uses a lot of RAM even with a 0.5B model
+- Added better reward to penalize repeat guesses. 
+- Theoretically can do a full run now
+- TODO:
+  - At end, render game goal word and other stats to validation generation dashboard
 
 ## Claude Changes
 - **Fixed reward accumulation**: Modified `verl/interactions/wordle_interaction.py` to accumulate `total_reward` across turns instead of overwriting per turn
