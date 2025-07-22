@@ -9,7 +9,7 @@ def create_wordle_dataset():
     """Create a minimal Wordle dataset with the required VERL structure"""
     
     # Common 5-letter words for Wordle
-    target_words = ["HOUSE", "APPLE"]
+    target_words = ["house", "apple", "class", "train"]
     
     # Create some sample Wordle prompts
     data = []
@@ -20,7 +20,7 @@ def create_wordle_dataset():
             "prompt": [
                 {
                     "role": "system", 
-                    "content": "You are an agent playing Wordle. Your job is to guess a real 5-letter word. Your output should ONLY be a 5-letter word and NOTHING ELSE. You should respond with dashes separrating each letter. For example, if your guess is 'HELLO', you should respond with 'H-E-L-L-O'."
+                    "content": f"You are an agent playing Wordle. Your job is to guess a real 5-letter word. Your output should ONLY be a 5-letter word and NOTHING ELSE. You should respond with dashes separrating each letter. For example, if your guess is 'HELLO', you should respond with 'H-E-L-L-O'."
                 },
                 {
                     "role": "user", 

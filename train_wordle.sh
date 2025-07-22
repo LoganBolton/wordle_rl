@@ -9,6 +9,8 @@ python3 -m verl.trainer.main_ppo \
   algorithm.adv_estimator=grpo \
   data.train_files=/tmp/wordle_data/wordle_dataset.parquet \
   data.val_files=/tmp/wordle_data/wordle_dataset.parquet \
+  data.validation_shuffle=true \
+  data.val_batch_size=1 \
   data.return_multi_modal_inputs=false \
   data.train_batch_size=2 \
   data.max_prompt_length=1024 \
