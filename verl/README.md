@@ -4,6 +4,8 @@
 - Fixed issue where it wouldn't get rewarded for right word 
 - For some reason, the validation results always show for the exact same word and no other words  
   - Debug statements make it look like the train stuff sees separate data?
+  - Shuffling val data does nothing
+  - Changing val batch size also doesn't seem to help and also makes training logs look really funky (??)
 - Seems to learn how to guess decently after about 100 steps, starts to plateu though. 
 - TODO:
   - At end, render game goal word and other stats to validation generation dashboard
