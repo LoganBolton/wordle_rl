@@ -63,7 +63,7 @@ def create_wordle_dataset():
     # Create some sample Wordle prompts
     data = []
     
-    for i in range(20):  # Create N sample entries
+    for i in range(200):  # Create N sample entries
         entry = {
             "data_source": "wordle",  # This is the key the reward manager looks for
             "prompt": [

@@ -613,7 +613,7 @@ class RaySPINTrainer:
     def _maybe_log_val_generations(self, inputs, outputs, scores):
         """Log a table of validation samples to the configured logger (wandb or swanlab)"""
 
-        generations_to_log = self.config.trainer.log_val_generations
+        generations_to_log = self.config.trainer.
 
         if generations_to_log == 0:
             return

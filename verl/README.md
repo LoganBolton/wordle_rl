@@ -7,6 +7,8 @@
   - Shuffling val data does nothing
   - Changing val batch size also doesn't seem to help and also makes training logs look really funky (??)
 - Seems to learn how to guess decently after about 100 steps, starts to plateu though. 
+- steps 200 with rollout-n == 8 
+  - better than steps 400 with rollout-n == 4
 - TODO:
   - At end, render game goal word and other stats to validation generation dashboard
 

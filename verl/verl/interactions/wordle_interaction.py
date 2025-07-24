@@ -38,7 +38,7 @@ class WordleInteraction(BaseInteraction):
         """Create a fresh Wordle environment and return its *instance_id*."""
         if instance_id is None:
             instance_id = str(uuid4())
-        print(f"DEBUG: Starting interaction with target word: {target_word}")
+        # print(f"DEBUG: Starting interaction with target word: {target_word}")
         env = WordleEnv(word=target_word)
         self._instance_dict[instance_id] = {"env": env, "reward": 0.0, "total_reward": 0.0, "all_guesses": set()}
         return instance_id
