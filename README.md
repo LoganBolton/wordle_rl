@@ -1,7 +1,10 @@
 # Wordle project
 
 ## wip notes
-- Fixed issue where it wouldn't get rewarded for right word 
+- The reason things are crashing is that there is a memory leak somewhere that slowly builds up normal CPU RAM
+  - Current idea to fix this is to let the model train for 200ish steps and then save a checkpoint. Then, redo the training with the new base model
+  - Also might be an issue with the wordle import package?
+  - Could also just clear the memory every now and then
 - For some reason, the validation results always show for the exact same word and no other words  
   - Debug statements make it look like the train stuff sees separate data?
   - Shuffling val data does nothing

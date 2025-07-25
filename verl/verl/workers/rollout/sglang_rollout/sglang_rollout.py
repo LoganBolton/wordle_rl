@@ -991,6 +991,19 @@ class SGLangRollout(BaseRollout):
             tool_reward_tasks.append(calc_reward_and_release_fn(name, tool))
         tool_reward_scores = await asyncio.gather(*tool_reward_tasks)
         tool_reward_scores = dict(tool_reward_scores)
+        
+        # Calculate final score and clean up interactions to prevent memory leak
+        if _req.interaction_kwargs and self.interaction_map:
+            interaction_name = _req.interaction_kwargs.get("name", "gsm8k")
+            if interaction_name in self.interaction_map:
+                interaction = self.interaction_map[interaction_name]
+                try:
+                    final_score = await interaction.calculate_score(_req.request_id)
+                    await interaction.finalize_interaction(_req.request_id)
+                    tool_reward_scores["interaction_final_score"] = final_score
+                except Exception as e:
+                    logger.warning(f"Failed to finalize interaction {interaction_name}: {e}")
+        
         all_rewards = {**tool_reward_scores, **{"user_turn_rewards": user_turn_rewards}, **{"user_turn_metrics": user_turn_metrics}}
         _req.finalize(self.processing_class, all_rewards, finish_reason_type)
 

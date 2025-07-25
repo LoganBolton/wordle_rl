@@ -44,6 +44,7 @@ class WordleInteraction(BaseInteraction):
     def __init__(self, config: dict):
         super().__init__(config)
         self._instance_dict: dict[str, dict[str, Any]] = {}
+        self._max_instances = config.get("max_instances", 500)  # Limit concurrent instances
 
     # ---------------------------------------------------------------------
     # BaseInteraction API
@@ -58,6 +59,15 @@ class WordleInteraction(BaseInteraction):
         """Create a fresh Wordle environment and return its *instance_id*."""
         if instance_id is None:
             instance_id = str(uuid4())
+        
+        # Cleanup old instances if we're at the limit
+        if len(self._instance_dict) >= self._max_instances:
+            # Remove oldest half of instances (FIFO cleanup)
+            old_keys = list(self._instance_dict.keys())[:-self._max_instances//2]
+            for key in old_keys:
+                self._instance_dict.pop(key, None)
+            logger.info(f"Cleaned up {len(old_keys)} old game instances. Current count: {len(self._instance_dict)}")
+        
         # print(f"DEBUG: Starting interaction with target word: {target_word}")
         env = WordleEnv(word=target_word)
         self._instance_dict[instance_id] = {"env": env, "reward": 0.0, "total_reward": 0.0, "all_guesses": set()}

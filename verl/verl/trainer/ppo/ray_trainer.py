@@ -1401,6 +1401,12 @@ class RayPPOTrainer:
                 progress_bar.update(1)
                 self.global_steps += 1
 
+                # Periodic garbage collection to prevent memory leak
+                if self.global_steps % 50 == 0:
+                    import gc
+                    gc.collect()
+                    print(f"******Memory cleanup performed at step {self.global_steps}******")
+
                 if is_last_step:
                     pprint(f"Final validation metrics: {last_val_metrics}")
                     progress_bar.close()
