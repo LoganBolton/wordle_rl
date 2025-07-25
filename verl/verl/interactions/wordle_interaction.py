@@ -93,7 +93,7 @@ class WordleInteraction(BaseInteraction):
                 
                 # Check for repeat guess first (before validation)
                 if raw_guess in self._instance_dict[instance_id]["all_guesses"]:
-                    feedback_message = f"You already guessed '{raw_guess}'. Try a different word."
+                    feedback_message = f"You already guessed '{raw_guess}'. Think about a different word you should guess."
                     # Update total reward for repeat guess penalty
                     self._instance_dict[instance_id]["total_reward"] += -3.0
                     # Create info dict for repeat guess

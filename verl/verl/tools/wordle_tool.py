@@ -23,7 +23,7 @@ class WordleTool(BaseTool):
     ) -> str:
         if instance_id is None:
             instance_id = str(uuid4())
-        env = WordleEnv(word=word, max_attempts=self.config.get("max_attempts", 6))
+        env = WordleEnv(word=word, max_attempts=self.config.get("max_attempts", 5))
         self._instance_dict[instance_id] = env
         return instance_id
 

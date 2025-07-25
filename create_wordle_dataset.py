@@ -69,11 +69,11 @@ def create_wordle_dataset():
             "prompt": [
                 {
                     "role": "system", 
-                    "content": f"You are an agent playing Wordle. Your job is to guess a real 5-letter word. Format your final one word answer in \\boxed{{}}"
+                    "content": f"You are an agent playing Wordle. Your job is to guess a real 5-letter word. At the start of every turn, think step by step of what word you should guess. Format your final one word answer in \\boxed{{}}"
                 },
                 {
                     "role": "user", 
-                    "content": "Respond with your new one word guess."
+                    "content": "Respond with your initial guess to start the game."
                 }
             ],
             "ability": "game",
@@ -100,12 +100,30 @@ def create_wordle_dataset():
     os.makedirs("/tmp/wordle_data", exist_ok=True)
     
     # Save as parquet
-    df.to_parquet("/tmp/wordle_data/wordle_dataset.parquet", index=False)
+    df.to_parquet("/tmp/wordle_data/train_wordle_dataset.parquet", index=False)
     print(f"Created wordle dataset with {len(data)} entries")
     print("Dataset structure:")
     print(df.columns.tolist())
     print("\nFirst entry:")
     print(df.iloc[0].to_dict())
+
+
+    # --- Create a small validation set of size 4 ---
+    val_data = []
+    for i in range(4):
+        entry = data[i].copy()
+        entry["extra_info"] = entry["extra_info"].copy()
+        entry["extra_info"]["split"] = "val"
+        entry["extra_info"]["game_id"] = f"wordle_val_{i:04d}"
+        entry["extra_info"]["index"] = i
+        val_data.append(entry)
+    val_df = pd.DataFrame(val_data)
+    val_df.to_parquet("/tmp/wordle_data/val_wordle_dataset.parquet", index=False)
+    print(f"\nCreated validation wordle dataset with {len(val_data)} entries")
+    print("Validation dataset structure:")
+    print(val_df.columns.tolist())
+    print("\nFirst val entry:")
+    print(val_df.iloc[0].to_dict())
 
 if __name__ == "__main__":
     create_wordle_dataset() 
