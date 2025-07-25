@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from typing import Any, Optional
 from uuid import uuid4
 
@@ -8,7 +9,26 @@ from verl.tools.utils.wordle_env import WordleEnv
 from .base import BaseInteraction
 
 logger = logging.getLogger(__name__)
-logger.setLevel(os.getenv("VERL_LOGGING_LEVEL", "WARN"))
+logger.setLevel(os.getenv("VERL_LOGGING_LEVEL", "INFO"))
+
+
+def extract_boxed_content(text: str) -> str:
+    """Extract the final \boxed{} content from the text.
+    
+    Args:
+        text: Input text that may contain \boxed{content}
+        
+    Returns:
+        Content inside the last \boxed{} tag found, or empty string if no boxed content found
+    """
+    pattern = r'\\boxed\{([^}]*)\}'
+    matches = re.findall(pattern, text)
+    if matches:
+        final_content = matches[-1].strip()  # Get the last match
+        logger.info(f"Found {len(matches)} boxed content(s), returning final: '{final_content}'")
+        return final_content
+    logger.warning(f"No boxed content found in text: {repr(text[:100])}...")
+    return ""  # Return empty string instead of the entire text
 
 
 class WordleInteraction(BaseInteraction):
@@ -66,7 +86,8 @@ class WordleInteraction(BaseInteraction):
         
         for msg in reversed(messages):
             if msg.get("role") == "assistant":
-                raw_guess = msg.get("content", "").strip().lower()
+                content = msg.get("content", "")
+                raw_guess = extract_boxed_content(content).lower()
                 # Remove dashes to handle tokenization-friendly format (e.g., "s-t-a-r-s" -> "stars")
                 clean_guess = raw_guess.replace("-", "").replace(" ", "")
                 

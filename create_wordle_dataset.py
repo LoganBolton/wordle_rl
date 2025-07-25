@@ -69,7 +69,7 @@ def create_wordle_dataset():
             "prompt": [
                 {
                     "role": "system", 
-                    "content": f"You are an agent playing Wordle. Your job is to guess a real 5-letter word. Your output should ONLY be a 5-letter word and NOTHING ELSE. You should respond with dashes separrating each letter. For example, if your guess is 'HELLO', you should respond with 'H-E-L-L-O'."
+                    "content": f"You are an agent playing Wordle. Your job is to guess a real 5-letter word. Format your final one word answer in \\boxed{{}}"
                 },
                 {
                     "role": "user", 
