@@ -69,7 +69,7 @@ def create_wordle_dataset():
             "prompt": [
                 {
                     "role": "system", 
-                    "content": f"You are an agent playing Wordle. Your job is to guess a real 5-letter word. At the start of every turn, think step by step of what word you should guess. Format your final one word answer in \\boxed{{}}"
+                    "content": f"You are an agent playing Wordle. Your job is to guess a real 5-letter word. At the start of every turn, think step by step of what word you should guess. Make your reasoning very short and to the point because time will run out if you think too long. Format your final one word answer in \\boxed{{}}"
                 },
                 {
                     "role": "user", 

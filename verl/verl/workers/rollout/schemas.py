@@ -155,7 +155,7 @@ class AsyncRolloutRequest(BaseModel):
             tools=tools,
             add_generation_prompt=False,
             tokenize=True,
-            enable_thinking=False,
+            enable_thinking=True,
         )
         if (
             values.get("input_ids") is None
@@ -169,7 +169,7 @@ class AsyncRolloutRequest(BaseModel):
                 tools=tools,
                 add_generation_prompt=True,
                 tokenize=True,
-                enable_thinking=False,
+                enable_thinking=True,
                 return_dict=True,
             )
 
@@ -205,7 +205,7 @@ class AsyncRolloutRequest(BaseModel):
             tools=tools,
             add_generation_prompt=False,
             tokenize=True,
-            enable_thinking=False,
+            enable_thinking=True,
         ).shape[-1]
 
         values["base_conv_with_gen_prompt_end_pos"] = cls._handle_apply_chat_template(
@@ -215,7 +215,7 @@ class AsyncRolloutRequest(BaseModel):
             tools=tools,
             add_generation_prompt=True,
             tokenize=True,
-            enable_thinking=False,
+            enable_thinking=True,
         ).shape[-1]
 
         return values
@@ -371,7 +371,7 @@ class AsyncRolloutRequest(BaseModel):
                 tools=tools,
                 add_generation_prompt=True,
                 tokenize=True,
-                enable_thinking=False,
+                enable_thinking=True,
             )
             return generation_prompt_ids.squeeze(0).tolist()
         else:
@@ -389,7 +389,7 @@ class AsyncRolloutRequest(BaseModel):
         # We don't need to pass multi_modal_data here because we don't have any multi-modal data from Engine
         # Inference, it is pure text.
         content_ids = self._handle_apply_chat_template(
-            processing_class, messages, multi_modal_data={}, tools=tools, add_generation_prompt=False, tokenize=True, enable_thinking=False
+            processing_class, messages, multi_modal_data={}, tools=tools, add_generation_prompt=False, tokenize=True, enable_thinking=True
         )[..., self.base_conv_wo_gen_prompt_end_pos :]
         self._update_input_ids(processing_class, content_ids, attention_mask=True, loss_mask=False)
 
@@ -407,7 +407,7 @@ class AsyncRolloutRequest(BaseModel):
         # We don't need to pass multi_modal_data here because we don't have any multi-modal data from Engine
         # Inference, it is pure text.
         content_ids = self._handle_apply_chat_template(
-            processing_class, messages, multi_modal_data={}, tools=tools, add_generation_prompt=False, tokenize=True, enable_thinking=False
+            processing_class, messages, multi_modal_data={}, tools=tools, add_generation_prompt=False, tokenize=True, enable_thinking=True
         )[..., self.base_conv_with_gen_prompt_end_pos :]
         self._update_input_ids(processing_class, content_ids, attention_mask=True, loss_mask=True)
 
@@ -472,7 +472,7 @@ class AsyncRolloutRequest(BaseModel):
             tools=tools,
             add_generation_prompt=False,
             tokenize=True,
-            enable_thinking=False,
+            enable_thinking=True,
             return_dict=True,
         )
         content_ids = content_info["input_ids"][..., self.base_conv_wo_gen_prompt_end_pos :]
@@ -583,7 +583,7 @@ class AsyncRolloutRequest(BaseModel):
                 processing_class,
                 messages,
                 multi_modal_data=self.multi_modal_data,
-                enable_thinking=False,
+                enable_thinking=True,
                 tools=tools,
                 add_generation_prompt=False,
                 tokenize=True,

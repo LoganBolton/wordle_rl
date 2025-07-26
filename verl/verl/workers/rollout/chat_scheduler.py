@@ -168,7 +168,7 @@ class ToolCompletionCallback(CompletionCallback):
         # prompts: [prompt] from input dataset
         prompts = [
             self.tokenizer.apply_chat_template(
-                prompt, tools=self.tool_schemas, add_generation_prompt=True, tokenize=False, enable_thinking=False
+                prompt, tools=self.tool_schemas, add_generation_prompt=True, tokenize=False, enable_thinking=True
             )
             for prompt in batch.non_tensor_batch["raw_prompt"]
         ]
@@ -177,7 +177,7 @@ class ToolCompletionCallback(CompletionCallback):
         # sequences: [prompt + response]
         sequences = [
             self.tokenizer.apply_chat_template(
-                conversation, tools=self.tool_schemas, add_generation_prompt=False, tokenize=False, enable_thinking=False
+                conversation, tools=self.tool_schemas, add_generation_prompt=False, tokenize=False, enable_thinking=True
             )
             for conversation in batch_conversations
         ]
