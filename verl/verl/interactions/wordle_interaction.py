@@ -25,7 +25,7 @@ def extract_boxed_content(text: str) -> str:
     matches = re.findall(pattern, text)
     if matches:
         final_content = matches[-1].strip()  # Get the last match
-        logger.info(f"Found {len(matches)} boxed content(s), returning final: '{final_content}'")
+        # logger.info(f"Found {len(matches)} boxed content(s), returning final: '{final_content}'")
         return final_content
     logger.warning(f"No boxed content found in text: {repr(text[:100])}...")
     return ""  # Return empty string instead of the entire text
