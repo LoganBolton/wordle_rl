@@ -43,8 +43,10 @@ python3 -m verl.trainer.main_ppo \
   trainer.experiment_name=wordle-qwen2.5-0.5b \
   trainer.n_gpus_per_node=2 \
   trainer.nnodes=1 \
-  trainer.total_epochs=25 \
+  trainer.total_epochs=40 \
   trainer.val_before_train=false \
   trainer.log_val_generations=1 \
-  trainer.test_freq=25 \
-  trainer.save_freq=200
+  trainer.test_freq=10 \
+  trainer.save_freq=100 \
+  trainer.resume_mode=resume_path \
+  trainer.resume_from_path=checkpoints/verl_wordle/wordle-qwen2.5-0.5b/global_step_400

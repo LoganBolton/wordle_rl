@@ -97,6 +97,14 @@ class WordleInteraction(BaseInteraction):
         for msg in reversed(messages):
             if msg.get("role") == "assistant":
                 content = msg.get("content", "")
+                
+                # Add response length penalty to prevent reward hacking
+                max_response_length = 1000 
+                if len(content) > max_response_length:
+                    length_penalty = -2.0 - (len(content) - max_response_length) * 0.001  # Escalating penalty
+                    self._instance_dict[instance_id]["total_reward"] += length_penalty
+                    logger.info(f"Applied length penalty {length_penalty:.3f} for response length {len(content)}")
+                
                 raw_guess = extract_boxed_content(content).lower()
                 # Remove dashes to handle tokenization-friendly format (e.g., "s-t-a-r-s" -> "stars")
                 clean_guess = raw_guess.replace("-", "").replace(" ", "")
@@ -164,6 +172,15 @@ class WordleInteraction(BaseInteraction):
         self._instance_dict[instance_id]["reward"] = reward
         # Accumulate total reward across all turns
         self._instance_dict[instance_id]["total_reward"] += reward
+        
+        # Add penalty for games ending too quickly (unless solved)
+        if done and env.attempts <= 2:
+            # Check if the game was actually solved (positive reward indicates success)
+            game_solved = reward > 0 and hasattr(env.game, 'is_complete') and env.game.is_complete
+            if not game_solved:
+                quick_end_penalty = -3.0
+                self._instance_dict[instance_id]["total_reward"] += quick_end_penalty
+                logger.info(f"Applied quick-end penalty {quick_end_penalty} for game ending in {env.attempts} attempts without solving")
 
         # ------------------------------------------------------------------
         # 3. Build assistant message (state prompt)
