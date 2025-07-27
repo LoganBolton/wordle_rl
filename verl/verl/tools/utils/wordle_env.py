@@ -64,7 +64,7 @@ class WordleEnv:
             
         # Check if game is solved
         if self.game.solved:
-            return 25
+            return 20
             
         # Check if game failed (out of attempts)
         if self.game.failed:

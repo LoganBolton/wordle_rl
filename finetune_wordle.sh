@@ -23,11 +23,11 @@ python3 -m verl.trainer.main_ppo \
   actor_rollout_ref.rollout.multi_turn.interaction_config_path="verl/examples/sglang_multiturn/config/interaction_config/wordle_interaction_config.yaml" \
   actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
   actor_rollout_ref.rollout.gpu_memory_utilization=0.6 \
-  actor_rollout_ref.actor.optim.lr=5e-7 \
+  actor_rollout_ref.actor.optim.lr=1e-6 \
   actor_rollout_ref.actor.ppo_mini_batch_size=2 \
   actor_rollout_ref.actor.ppo_micro_batch_size=2 \
   actor_rollout_ref.actor.use_kl_loss=true \
-  actor_rollout_ref.actor.kl_loss_coef=0.02 \
+  actor_rollout_ref.actor.kl_loss_coef=0.01 \
   actor_rollout_ref.ref.log_prob_micro_batch_size=2 \
   actor_rollout_ref.rollout.log_prob_micro_batch_size=2 \
   actor_rollout_ref.actor.strategy="fsdp2" \
@@ -46,5 +46,5 @@ python3 -m verl.trainer.main_ppo \
   trainer.total_epochs=25 \
   trainer.val_before_train=false \
   trainer.log_val_generations=1 \
-  trainer.test_freq=1 \
-  trainer.save_freq=-1
+  trainer.test_freq=25 \
+  trainer.save_freq=200
