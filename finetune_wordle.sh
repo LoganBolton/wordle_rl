@@ -9,9 +9,8 @@ python3 -m verl.trainer.main_ppo \
   algorithm.adv_estimator=grpo \
   data.train_files=/tmp/wordle_data/train_wordle_dataset.parquet \
   data.val_files=/tmp/wordle_data/val_wordle_dataset.parquet \
-  data.val_files=/tmp/wordle_data/val_wordle_dataset.parquet \
   data.return_multi_modal_inputs=false \
-  data.train_batch_size=2 \
+  data.train_batch_size=4 \
   data.max_prompt_length=128 \
   data.max_response_length=2048 \
   data.return_raw_chat=true \
@@ -24,11 +23,11 @@ python3 -m verl.trainer.main_ppo \
   actor_rollout_ref.rollout.multi_turn.interaction_config_path="verl/examples/sglang_multiturn/config/interaction_config/wordle_interaction_config.yaml" \
   actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
   actor_rollout_ref.rollout.gpu_memory_utilization=0.6 \
-  actor_rollout_ref.actor.optim.lr=1e-6 \
+  actor_rollout_ref.actor.optim.lr=5e-7 \
   actor_rollout_ref.actor.ppo_mini_batch_size=2 \
   actor_rollout_ref.actor.ppo_micro_batch_size=2 \
   actor_rollout_ref.actor.use_kl_loss=true \
-  actor_rollout_ref.actor.kl_loss_coef=0.001 \
+  actor_rollout_ref.actor.kl_loss_coef=0.02 \
   actor_rollout_ref.ref.log_prob_micro_batch_size=2 \
   actor_rollout_ref.rollout.log_prob_micro_batch_size=2 \
   actor_rollout_ref.actor.strategy="fsdp2" \
@@ -44,7 +43,7 @@ python3 -m verl.trainer.main_ppo \
   trainer.experiment_name=wordle-qwen2.5-0.5b \
   trainer.n_gpus_per_node=2 \
   trainer.nnodes=1 \
-  trainer.total_epochs=50 \
+  trainer.total_epochs=25 \
   trainer.val_before_train=false \
   trainer.log_val_generations=1 \
   trainer.test_freq=1 \

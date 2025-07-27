@@ -13,7 +13,7 @@ python3 -m verl.trainer.main_ppo \
   data.return_multi_modal_inputs=false \
   data.train_batch_size=2 \
   data.max_prompt_length=128 \
-  data.max_response_length=4096 \
+  data.max_response_length=2048 \
   data.return_raw_chat=true \
   actor_rollout_ref.model.path=Qwen/Qwen3-1.7B \
   actor_rollout_ref.rollout.name=sglang \

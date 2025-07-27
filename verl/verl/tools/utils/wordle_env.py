@@ -56,15 +56,15 @@ class WordleEnv:
     def get_reward(self, is_repeat_guess=False):
         """Calculate reward based on the last guess result"""
         if not self.last_result:  # Invalid guess
-            return -2
+            return -6
             
         # Penalty for repeat guesses
         if is_repeat_guess:
-            return -3
+            return -8
             
         # Check if game is solved
         if self.game.solved:
-            return 30
+            return 25
             
         # Check if game failed (out of attempts)
         if self.game.failed:
@@ -73,8 +73,8 @@ class WordleEnv:
         # Calculate incremental reward based on letter positions
         reward = 0
         for letter, score in self.last_result:
-            if score == 2:  # Correct position
-                reward += 1
+            if score == 3:  # Correct position
+                reward += 3
             elif score == 1:  # Wrong position
                 reward += 0.5
             # score == 0 (not in word) adds 0
