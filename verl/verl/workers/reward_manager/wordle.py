@@ -57,11 +57,8 @@ class WordleRewardManager:
             sample_rewards = 0.0
             reward_dict = data.non_tensor_batch["reward_scores"][i]
             if isinstance(reward_dict, dict):
-                # Sum over all user-turn rewards (can switch to last reward if
-                # desired).
-                user_turn_rewards = reward_dict.get("user_turn_rewards", [])
-                if len(user_turn_rewards) > 0:
-                    sample_rewards = float(sum(user_turn_rewards))
+                # Use interaction final score for cumulative rewards
+                sample_rewards = float(reward_dict.get("interaction_final_score", 0.0))
                 
                 # Extract metrics from user turns for extra info
                 user_turn_metrics = reward_dict.get("user_turn_metrics", [])

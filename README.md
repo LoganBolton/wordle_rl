@@ -36,6 +36,11 @@
 
 ## notes
 I am just using n_nodes == 1 right now for simplicity. that affects infer_tp because the code wants to tensor parallel over just one gpu
+to start from checkpoint add
+```
+  trainer.resume_mode=resume_path \
+  trainer.resume_from_path=checkpoints/verl_wordle/wordle-qwen2.5-0.5b/global_step_200
+```
 
 
 

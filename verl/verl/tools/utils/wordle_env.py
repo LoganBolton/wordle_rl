@@ -20,9 +20,6 @@ class WordleEnv:
         if self.gameOver:
             return self.get_observation(), 0, True, {"error": "Game is already over"}
         
-        # Check if word was already guessed
-        is_repeat_guess = guess.lower() in self.guessed_words
-        
         # Make the guess and store result
         self.last_result = self.game.guess(guess)
         self.attempts += 1
@@ -31,7 +28,7 @@ class WordleEnv:
         self.guessed_words.add(guess.lower())
         
         # Calculate reward
-        reward = self.get_reward(is_repeat_guess)
+        reward = self.get_reward()
         
         # Check if game is over
         done = self.game.solved or self.game.failed or self.attempts >= self.max_attempts
@@ -47,34 +44,29 @@ class WordleEnv:
             "attempts": self.attempts,
             "target_word": self.game.word,
             "last_guess": guess,
-            "last_result": self.last_result,
-            "is_repeat_guess": is_repeat_guess
+            "last_result": self.last_result
         }
         
         return observation, reward, done, info
 
-    def get_reward(self, is_repeat_guess=False):
+    def get_reward(self):
         """Calculate reward based on the last guess result"""
+        reward = 0
         if not self.last_result:  # Invalid guess
-            return -6
-            
-        # Penalty for repeat guesses
-        if is_repeat_guess:
-            return -8
+            return -2
             
         # Check if game is solved
         if self.game.solved:
-            return 20
+            return 30
             
-        # Check if game failed (out of attempts)
+        # # Check if game failed (out of attempts)
         if self.game.failed:
-            return -5
+            reward = -5
             
         # Calculate incremental reward based on letter positions
-        reward = 0
         for letter, score in self.last_result:
-            if score == 3:  # Correct position
-                reward += 3
+            if score == 2:  # Correct position
+                reward += 2
             elif score == 1:  # Wrong position
                 reward += 0.5
             # score == 0 (not in word) adds 0
@@ -101,9 +93,10 @@ class WordleEnv:
             
         result = self.last_result
         prompt = f""
+        guessed_list = ", ".join(sorted(self.guessed_words))
 
         if not result:  # Invalid guess
-            prompt += f"Guess '{guess}' is NOT a valid word or is NOT the correct length. Try a different word.\n"
+            prompt += f"Guess '{guess}' is NOT a valid word or is NOT the correct length.\nAttempts remaining: {self.max_attempts - self.attempts}. Previously guessed words: {guessed_list}. Guess a different word.\n"
             return prompt
 
         # Add the result to the prompt
@@ -121,7 +114,6 @@ class WordleEnv:
         elif self.game.failed:
             prompt += f"\n💔 Game over! The word was '{self.game.word}'\n"
         else:
-            guessed_list = ", ".join(sorted(self.guessed_words))
             prompt += f"\nAttempts remaining: {self.max_attempts - self.attempts}. Previously guessed words: {guessed_list}. Guess a different word.\n"
         
         return prompt

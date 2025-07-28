@@ -106,11 +106,11 @@ class WordleInteraction(BaseInteraction):
                 content = msg.get("content", "")
                 
                 # Add response length penalty to prevent reward hacking
-                max_response_length = 1000 
-                if len(content) > max_response_length:
-                    length_penalty = -5.0 - (len(content) - max_response_length) * 0.001  # Escalating penalty
-                    self._instance_dict[instance_id]["total_reward"] += length_penalty
-                    logger.info(f"Applied length penalty {length_penalty:.3f} for response length {len(content)}")
+                # max_response_length = 1000 
+                # if len(content) > max_response_length:
+                #     length_penalty = -5.0 - (len(content) - max_response_length) * 0.001  # Escalating penalty
+                #     self._instance_dict[instance_id]["total_reward"] += length_penalty
+                #     logger.info(f"Applied length penalty {length_penalty:.3f} for response length {len(content)}")
                 
                 raw_guess = extract_boxed_content(content).lower()
                 # Remove dashes to handle tokenization-friendly format (e.g., "s-t-a-r-s" -> "stars")
@@ -119,10 +119,11 @@ class WordleInteraction(BaseInteraction):
                 # Check for repeat guess first (before validation)
                 if raw_guess in self._instance_dict[instance_id]["all_guesses"]:
                     feedback_message = f"You already guessed '{raw_guess}'. Think about a different word you should guess."
-                    # Update total reward for repeat guess penalty
-                    self._instance_dict[instance_id]["total_reward"] += -3.0
-                    # Create info dict for repeat guess
+                    penalty = -0.5
+
+                    self._instance_dict[instance_id]["total_reward"] += penalty
                     env = self._instance_dict[instance_id]["env"]
+
                     info = {
                         "error": "repeat_guess",
                         "raw_guess": raw_guess,
@@ -131,7 +132,7 @@ class WordleInteraction(BaseInteraction):
                         "total_reward": self._instance_dict[instance_id]["total_reward"],
                         "all_guesses": list(self._instance_dict[instance_id]["all_guesses"])
                     }
-                    return False, feedback_message, -3.0, info
+                    return False, feedback_message, penalty, info
                 
                 # Add to all guesses set
                 self._instance_dict[instance_id]["all_guesses"].add(raw_guess)
@@ -206,12 +207,12 @@ class WordleInteraction(BaseInteraction):
         instance = self._instance_dict[instance_id]
         total_reward = instance["total_reward"]
         
-        # Apply severe penalty for early termination without solving the game
-        if not instance["game_completed"] or not instance["game_solved"]:
-            # If the game never completed properly OR wasn't solved, apply a large penalty
-            early_termination_penalty = -7.0
-            total_reward += early_termination_penalty
-            logger.info(f"Applied early termination penalty {early_termination_penalty} for incomplete/unsolved game")
+        # # Apply severe penalty for early termination without solving the game
+        # if not instance["game_completed"] or not instance["game_solved"]:
+        #     # If the game never completed properly OR wasn't solved, apply a large penalty
+        #     early_termination_penalty = -7.0
+        #     total_reward += early_termination_penalty
+        #     logger.info(f"Applied early termination penalty {early_termination_penalty} for incomplete/unsolved game")
         
         return float(total_reward)
 
