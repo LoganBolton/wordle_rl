@@ -70,7 +70,14 @@ class WordleInteraction(BaseInteraction):
         
         # print(f"DEBUG: Starting interaction with target word: {target_word}")
         env = WordleEnv(word=target_word)
-        self._instance_dict[instance_id] = {"env": env, "reward": 0.0, "total_reward": 0.0, "all_guesses": set()}
+        self._instance_dict[instance_id] = {
+            "env": env, 
+            "reward": 0.0, 
+            "total_reward": 0.0, 
+            "all_guesses": set(),
+            "game_completed": False,
+            "game_solved": False
+        }
         return instance_id
 
     async def generate_response(
@@ -101,7 +108,7 @@ class WordleInteraction(BaseInteraction):
                 # Add response length penalty to prevent reward hacking
                 max_response_length = 1000 
                 if len(content) > max_response_length:
-                    length_penalty = -2.0 - (len(content) - max_response_length) * 0.001  # Escalating penalty
+                    length_penalty = -5.0 - (len(content) - max_response_length) * 0.001  # Escalating penalty
                     self._instance_dict[instance_id]["total_reward"] += length_penalty
                     logger.info(f"Applied length penalty {length_penalty:.3f} for response length {len(content)}")
                 
@@ -168,16 +175,20 @@ class WordleInteraction(BaseInteraction):
         # ------------------------------------------------------------------
         # 2. Step the environment and compute reward
         # ------------------------------------------------------------------
-        observation, reward, done, info = env.step(guess)
+        _, reward, done, info = env.step(guess)
         self._instance_dict[instance_id]["reward"] = reward
         # Accumulate total reward across all turns
         self._instance_dict[instance_id]["total_reward"] += reward
         
-        # Add penalty for games ending too quickly (unless solved)
-        if done and env.attempts <= 2:
+        # Track game completion status
+        if done:
+            self._instance_dict[instance_id]["game_completed"] = True
             # Check if the game was actually solved (positive reward indicates success)
             game_solved = reward > 0 and hasattr(env.game, 'is_complete') and env.game.is_complete
-            if not game_solved:
+            self._instance_dict[instance_id]["game_solved"] = game_solved
+            
+            # Add penalty for games ending too quickly (unless solved)
+            if env.attempts <= 2 and not game_solved:
                 quick_end_penalty = -3.0
                 self._instance_dict[instance_id]["total_reward"] += quick_end_penalty
                 logger.info(f"Applied quick-end penalty {quick_end_penalty} for game ending in {env.attempts} attempts without solving")
@@ -191,8 +202,18 @@ class WordleInteraction(BaseInteraction):
         return should_terminate_sequence, response, reward, info
 
     async def calculate_score(self, instance_id: str, **_: Any) -> float:
-        """Return the accumulated total reward across all turns."""
-        return float(self._instance_dict[instance_id]["total_reward"])
+        """Return the accumulated total reward across all turns with early termination penalty."""
+        instance = self._instance_dict[instance_id]
+        total_reward = instance["total_reward"]
+        
+        # Apply severe penalty for early termination without solving the game
+        if not instance["game_completed"] or not instance["game_solved"]:
+            # If the game never completed properly OR wasn't solved, apply a large penalty
+            early_termination_penalty = -7.0
+            total_reward += early_termination_penalty
+            logger.info(f"Applied early termination penalty {early_termination_penalty} for incomplete/unsolved game")
+        
+        return float(total_reward)
 
     async def finalize_interaction(self, instance_id: str, **_: Any) -> None:
         """Clean up the interaction state."""
