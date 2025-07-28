@@ -41,6 +41,10 @@ to start from checkpoint add
   trainer.resume_mode=resume_path \
   trainer.resume_from_path=checkpoints/verl_wordle/wordle-qwen2.5-0.5b/global_step_200
 ```
+to turn off add:
+```
+  trainer.resume_mode=disable \
+```
 
 
 
