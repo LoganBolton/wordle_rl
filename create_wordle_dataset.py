@@ -62,8 +62,8 @@ def create_wordle_dataset():
     
     # Create some sample Wordle prompts
     data = []
-    
-    for i in range(200):  # Create N sample entries
+    print(f"Possible target words: {len(target_words)}")
+    for i in range(1000):  # Create N sample entries
         entry = {
             "data_source": "wordle",  # This is the key the reward manager looks for
             "prompt": [
@@ -100,7 +100,7 @@ def create_wordle_dataset():
     os.makedirs("/tmp/wordle_data", exist_ok=True)
     
     # Save as parquet
-    df.to_parquet("/tmp/wordle_data/train_wordle_dataset.parquet", index=False)
+    df.to_parquet("/tmp/wordle_data/eval_wordle_dataset.parquet", index=False)
     print(f"Created wordle dataset with {len(data)} entries")
     print("Dataset structure:")
     print(df.columns.tolist())

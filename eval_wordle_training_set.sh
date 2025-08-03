@@ -1,7 +1,20 @@
+#!/bin/bash
+
+# Pure evaluation script for Wordle model on the ENTIRE training dataset
+# This script runs evaluation without any training - just pure inference and metric collection
+
 PROJECT_DIR="$(pwd)"
 CONFIG_PATH="$PROJECT_DIR/verl/examples/sglang_multiturn/config"
 
 export CUDA_VISIBLE_DEVICES=1,0
+
+echo "=========================================="
+echo "WORDLE MODEL EVALUATION ON TRAINING SET"
+echo "=========================================="
+echo "Model: loganbolton/qwen-wordle-finetuned"
+echo "Dataset: /tmp/wordle_data/train_wordle_dataset.parquet"
+echo "Mode: Pure evaluation (no training)"
+echo "=========================================="
 
 python3 -m verl.trainer.main_ppo \
   --config-path="$CONFIG_PATH" \
@@ -14,7 +27,7 @@ python3 -m verl.trainer.main_ppo \
   data.max_prompt_length=128 \
   data.max_response_length=2048 \
   data.return_raw_chat=true \
-  actor_rollout_ref.model.path=loganbolton/qwen-wordle-finetuned \
+  actor_rollout_ref.model.path=loganbolton/qwen-wordle-fsdp-merged \
   actor_rollout_ref.rollout.name=sglang \
   actor_rollout_ref.rollout.multi_turn.enable=True \
   +actor_rollout_ref.rollout.max_steps=7 \
@@ -39,13 +52,19 @@ python3 -m verl.trainer.main_ppo \
   ++actor_rollout_ref.ref.entropy_from_logits_with_chunking=true \
   ++actor_rollout_ref.actor.entropy_checkpointing=false \
   trainer.logger="['console','wandb']" \
-  trainer.project_name=verl_wordle \
-  trainer.experiment_name=wordle-qwen2.5-0.5b \
+  trainer.project_name=verl_wordle_eval \
+  trainer.experiment_name=wordle-training-set-eval \
   trainer.n_gpus_per_node=2 \
   trainer.nnodes=1 \
-  trainer.total_epochs=70 \
-  trainer.val_before_train=false \
+  trainer.total_epochs=1 \
+  trainer.val_before_train=true \
+  trainer.val_only=true \
   trainer.log_val_generations=1 \
   trainer.test_freq=1 \
-  trainer.save_freq=100 \
+  trainer.save_freq=-1 \
   trainer.resume_mode=disable \
+
+echo "=========================================="
+echo "EVALUATION COMPLETED"
+echo "Check wandb project 'verl_wordle_eval' for results"
+echo "=========================================="

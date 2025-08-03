@@ -33,6 +33,10 @@ class WordleRewardManager:
         # the existing reward-loading utility.
         self.tokenizer = tokenizer
         self.num_examine = num_examine
+        
+        # Track completion statistics for percent_completed metric
+        self.total_games = 0
+        self.completed_games = 0
 
     # ------------------------------------------------------------------
     # Main API
@@ -60,28 +64,50 @@ class WordleRewardManager:
                 # Use interaction final score for cumulative rewards
                 sample_rewards = float(reward_dict.get("interaction_final_score", 0.0))
                 
-                # Extract metrics from user turns for extra info
+                # Track game completion for percent_completed metric
                 user_turn_metrics = reward_dict.get("user_turn_metrics", [])
+                game_completed = False
+                
+                # Check if any turn shows the game was solved
+                for turn_metrics in user_turn_metrics:
+                    if isinstance(turn_metrics, dict) and turn_metrics.get("solved", False):
+                        game_completed = True
+                        break
+                
+                # Update completion statistics
+                self.total_games += 1
+                if game_completed:
+                    self.completed_games += 1
+                
+                # Extract metrics from user turns for extra info
                 for turn_idx, metrics in enumerate(user_turn_metrics):
                     if isinstance(metrics, dict):
                         for key, value in metrics.items():
-                            # Convert complex objects to strings for numpy compatibility
-                            if isinstance(value, list):
-                                value = str(value)  # Convert lists to strings
+                            # Keep numeric values as numeric for charting, convert others to strings
+                            if isinstance(value, (int, float, bool)):
+                                # Keep numeric values as-is for chart processing
+                                processed_value = float(value) if isinstance(value, bool) else value
+                            elif isinstance(value, list):
+                                processed_value = str(value)  # Convert lists to strings
                             elif isinstance(value, dict):
-                                value = str(value)  # Convert dicts to strings
+                                processed_value = str(value)  # Convert dicts to strings
                             elif value is None:
-                                value = ""  # Convert None to empty string
+                                processed_value = 0.0  # Convert None to 0 for numeric compatibility
+                            else:
+                                processed_value = str(value)  # Convert other types to strings
                             
                             if key not in reward_extra_info:
-                                reward_extra_info[key] = [""] * i  # Pad previous samples with empty strings
+                                # Pad previous samples with appropriate default values
+                                default_val = 0.0 if isinstance(processed_value, (int, float)) else ""
+                                reward_extra_info[key] = [default_val] * i
                             # Ensure we have enough space for current sample
                             while len(reward_extra_info[key]) < i:
-                                reward_extra_info[key].append("")
+                                default_val = 0.0 if isinstance(processed_value, (int, float)) else ""
+                                reward_extra_info[key].append(default_val)
                             if len(reward_extra_info[key]) == i:
-                                reward_extra_info[key].append(str(value))
+                                reward_extra_info[key].append(processed_value)
                             else:
-                                reward_extra_info[key][i] = str(value)
+                                reward_extra_info[key][i] = processed_value
             
             # Place the scalar reward on the last valid response token.
             last_token_idx = int(response_mask[i].sum().item()) - 1
@@ -93,8 +119,33 @@ class WordleRewardManager:
             # Ensure all reward_extra_info lists have the same length
             for key in reward_extra_info:
                 while len(reward_extra_info[key]) <= i:
-                    reward_extra_info[key].append("")
+                    # Use appropriate default value based on existing data type
+                    if len(reward_extra_info[key]) > 0:
+                        default_val = 0.0 if isinstance(reward_extra_info[key][0], (int, float)) else ""
+                    else:
+                        default_val = ""
+                    reward_extra_info[key].append(default_val)
+        
+        # Add percent_completed metric - use cumulative completion rate as a numeric value
+        if "percent_completed" not in reward_extra_info:
+            # Calculate the current cumulative completion rate
+            percent_completed = float((self.completed_games / self.total_games * 100.0) if self.total_games > 0 else 0.0)
+            reward_extra_info["percent_completed"] = [percent_completed] * batch_size
 
         if return_dict:
             return {"reward_tensor": reward_tensor, "reward_extra_info": reward_extra_info}
-        return reward_tensor 
+        return reward_tensor
+    
+    def get_completion_stats(self):
+        """Get current completion statistics"""
+        percent_completed = (self.completed_games / self.total_games * 100.0) if self.total_games > 0 else 0.0
+        return {
+            "total_games": self.total_games,
+            "completed_games": self.completed_games,
+            "percent_completed": percent_completed
+        }
+    
+    def reset_completion_stats(self):
+        """Reset completion statistics"""
+        self.total_games = 0
+        self.completed_games = 0

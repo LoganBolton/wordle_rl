@@ -122,3 +122,11 @@ docker exec   -it verl_mt bash
 ```
 
 note: test_freq is actually how many steps until the model is tested on the validation set again
+
+# Results
+| Base Model   | Finetuned?  | GRPO?  | % of Games Succesfully Completed  |
+|--------------|-------------|--------|-----------------------------------|
+| Qwen3-1.7B   | No ❌       | No ❌  | 0.0                               |
+| Qwen3-1.7B   | Yes ✅      | No ❌  | 9                                 |
+| Qwen3-1.7B   | Yes ✅      | Yes ✅ | 9.25                              |
+
