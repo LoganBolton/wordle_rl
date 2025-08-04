@@ -10,9 +10,9 @@ python3 -m verl.trainer.main_ppo \
   data.train_files=/tmp/wordle_data/train_wordle_dataset.parquet \
   data.val_files=/tmp/wordle_data/train_wordle_dataset.parquet \
   data.return_multi_modal_inputs=false \
-  data.train_batch_size=8 \
+  data.train_batch_size=4 \
   data.max_prompt_length=128 \
-  data.max_response_length=4096 \
+  data.max_response_length=8192 \
   data.return_raw_chat=true \
   actor_rollout_ref.model.path=Qwen/Qwen3-1.7B \
   actor_rollout_ref.rollout.name=sglang \
@@ -28,7 +28,7 @@ python3 -m verl.trainer.main_ppo \
   actor_rollout_ref.actor.ppo_mini_batch_size=2 \
   actor_rollout_ref.actor.ppo_micro_batch_size=2 \
   actor_rollout_ref.actor.use_kl_loss=true \
-  actor_rollout_ref.actor.kl_loss_coef=0.002 \
+  actor_rollout_ref.actor.kl_loss_coef=0.001 \
   actor_rollout_ref.ref.log_prob_micro_batch_size=2 \
   actor_rollout_ref.rollout.log_prob_micro_batch_size=2 \
   actor_rollout_ref.actor.strategy="fsdp2" \
