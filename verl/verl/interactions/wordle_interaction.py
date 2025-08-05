@@ -169,7 +169,7 @@ class WordleInteraction(BaseInteraction):
                 "total_reward": self._instance_dict[instance_id]["total_reward"],
                 "all_guesses": list(self._instance_dict[instance_id]["all_guesses"])
             }
-            return False, feedback_message, -1.0, info
+            return False, feedback_message, 0.0, info
 
         env: WordleEnv = self._instance_dict[instance_id]["env"]
 
@@ -189,10 +189,10 @@ class WordleInteraction(BaseInteraction):
             self._instance_dict[instance_id]["game_solved"] = game_solved
             
             # Add penalty for games ending too quickly (unless solved)
-            if env.attempts <= 2 and not game_solved:
-                quick_end_penalty = -3.0
-                self._instance_dict[instance_id]["total_reward"] += quick_end_penalty
-                logger.info(f"Applied quick-end penalty {quick_end_penalty} for game ending in {env.attempts} attempts without solving")
+            # if env.attempts <= 2 and not game_solved:
+            #     quick_end_penalty = -3.0
+            #     self._instance_dict[instance_id]["total_reward"] += quick_end_penalty
+            #     logger.info(f"Applied quick-end penalty {quick_end_penalty} for game ending in {env.attempts} attempts without solving")
 
         # ------------------------------------------------------------------
         # 3. Build assistant message (state prompt)

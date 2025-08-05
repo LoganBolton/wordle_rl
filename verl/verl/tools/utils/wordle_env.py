@@ -53,20 +53,20 @@ class WordleEnv:
         """Calculate reward based on the last guess result"""
         reward = 0
         if not self.last_result:  # Invalid guess
-            return -2
+            return 0
             
         # Check if game is solved
         if self.game.solved:
-            return 30
+            return 10
             
         # # Check if game failed (out of attempts)
-        if self.game.failed:
-            reward = -5
+        # if self.game.failed:
+        #     reward = -5
             
         # Calculate incremental reward based on letter positions
         for letter, score in self.last_result:
             if score == 2:  # Correct position
-                reward += 2
+                reward += 1
             elif score == 1:  # Wrong position
                 reward += 0.5
             # score == 0 (not in word) adds 0
@@ -113,7 +113,5 @@ class WordleEnv:
             prompt += f"\n🎉 Congratulations! You solved it in {self.attempts} attempts!\n"
         elif self.game.failed:
             prompt += f"\n💔 Game over! The word was '{self.game.word}'\n"
-        else:
-            prompt += f"\nAttempts remaining: {self.max_attempts - self.attempts}. Previously guessed words: {guessed_list}. Guess a different word.\n"
         
         return prompt
