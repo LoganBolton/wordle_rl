@@ -77,7 +77,7 @@ To train from the original base model without a checkpoint add the following and
 ```
 
 
-# start docker container
+# Start Docker Container
 
 ```
 docker create --runtime=nvidia --gpus all \
