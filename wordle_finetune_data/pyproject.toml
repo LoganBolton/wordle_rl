@@ -1,0 +1,17 @@
+[project]
+name = "wordle-data"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic",
+    "python-wordle",
+    "tqdm",
+    "torch",
+    "transformers[torch]",
+    "datasets",
+    "wandb",
+    "accelerate",
+    "huggingface_hub",
+]
