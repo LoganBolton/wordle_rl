@@ -119,7 +119,7 @@ class WordleInteraction(BaseInteraction):
                 # Check for repeat guess first (before validation)
                 if raw_guess in self._instance_dict[instance_id]["all_guesses"]:
                     feedback_message = f"You already guessed '{raw_guess}'. Think about a different word you should guess."
-                    penalty = -0.5
+                    penalty = 0.0
 
                     self._instance_dict[instance_id]["total_reward"] += penalty
                     env = self._instance_dict[instance_id]["env"]
@@ -158,7 +158,7 @@ class WordleInteraction(BaseInteraction):
             if not feedback_message:
                 feedback_message = "Please provide a 5-letter word guess using the format: L-E-T-T-E-R"
             # Update total reward for invalid format penalty
-            self._instance_dict[instance_id]["total_reward"] += -1.0
+            self._instance_dict[instance_id]["total_reward"] += 0.0
             # Create info dict for invalid format
             env = self._instance_dict[instance_id]["env"]
             info = {

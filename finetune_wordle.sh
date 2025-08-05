@@ -47,6 +47,6 @@ python3 -m verl.trainer.main_ppo \
   trainer.total_epochs=10 \
   trainer.val_before_train=false \
   trainer.log_val_generations=1 \
-  trainer.test_freq=10 \
-  trainer.save_freq=10 \
+  trainer.test_freq=5 \
+  trainer.save_freq=5 \
   trainer.resume_mode=disable \
