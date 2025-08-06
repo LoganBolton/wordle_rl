@@ -7,7 +7,7 @@ import os
 
 def upload_model():
     # Configuration
-    model_dir = "./checkpoints/verl_wordle/wordle-qwen2.5-0.5b/global_step_2000/actor"
+    model_dir = "./checkpoints/verl_wordle/wordle-qwen2.5-0.5b/global_step_10/actor"
     repo_name = "qwen-1.7b-wordle-grpo"
     
     # Get your username

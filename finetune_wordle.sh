@@ -10,7 +10,7 @@ python3 -m verl.trainer.main_ppo \
   data.train_files=/tmp/wordle_data/train_wordle_dataset.parquet \
   data.val_files=/tmp/wordle_data/train_wordle_dataset.parquet \
   data.return_multi_modal_inputs=false \
-  data.train_batch_size=8 \
+  data.train_batch_size=4 \
   data.max_prompt_length=128 \
   data.max_response_length=4096 \
   data.return_raw_chat=true \
@@ -18,7 +18,7 @@ python3 -m verl.trainer.main_ppo \
   actor_rollout_ref.rollout.name=sglang \
   actor_rollout_ref.rollout.multi_turn.enable=True \
   +actor_rollout_ref.rollout.max_steps=7 \
-  ++actor_rollout_ref.rollout.n=32 \
+  ++actor_rollout_ref.rollout.n=64 \
   +actor_rollout_ref.rollout.multi_turn.tool_config_path=verl/examples/sglang_multiturn/config/tool_config/wordle_tool_config.yaml \
   actor_rollout_ref.rollout.multi_turn.interaction_config_path="verl/examples/sglang_multiturn/config/interaction_config/wordle_interaction_config.yaml" \
   ++actor_rollout_ref.rollout.multi_turn.tokenization_sanity_check_mode="disable" \

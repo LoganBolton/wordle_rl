@@ -91,3 +91,14 @@ docker start  verl_mt
 
 docker exec   -it verl_mt bash
 ```
+
+
+```
+pip install python-wordle
+pip install -e verl
+
+python
+>>> import wandb
+>>> wandb.login()
+
+```
