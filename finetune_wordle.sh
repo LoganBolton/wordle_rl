@@ -12,7 +12,7 @@ python3 -m verl.trainer.main_ppo \
   data.return_multi_modal_inputs=false \
   data.train_batch_size=4 \
   data.max_prompt_length=128 \
-  data.max_response_length=4096 \
+  data.max_response_length=2048 \
   data.return_raw_chat=true \
   actor_rollout_ref.model.path=loganbolton/qwen-wordle-finetuned \
   actor_rollout_ref.rollout.name=sglang \
@@ -24,7 +24,7 @@ python3 -m verl.trainer.main_ppo \
   ++actor_rollout_ref.rollout.multi_turn.tokenization_sanity_check_mode="disable" \
   actor_rollout_ref.rollout.tensor_model_parallel_size=1 \
   actor_rollout_ref.rollout.gpu_memory_utilization=0.6 \
-  actor_rollout_ref.actor.optim.lr=6e-6 \
+  actor_rollout_ref.actor.optim.lr=3e-6 \
   actor_rollout_ref.actor.ppo_mini_batch_size=4 \
   actor_rollout_ref.actor.ppo_micro_batch_size=4 \
   actor_rollout_ref.actor.use_kl_loss=true \
