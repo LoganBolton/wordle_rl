@@ -8,7 +8,7 @@ This project finetunes and uses reinforcement learning to train Qwen3-1.7B to pl
 | Qwen3-1.7B   | No ❌       | No ❌  | 0.1                               |
 | Qwen3-1.7B   | No ❌       | Yes ✅ | 1.2                               |
 | Qwen3-1.7B   | Yes ✅      | No ❌  | 9.3                               |
-| Qwen3-1.7B   | Yes ✅      | Yes ✅ | 23.95                             |
+| Qwen3-1.7B   | Yes ✅      | Yes ✅ | 17.95                             |
 
 # Lessons Learned from this Project
 
